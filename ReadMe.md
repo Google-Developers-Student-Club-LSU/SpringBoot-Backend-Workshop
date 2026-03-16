@@ -331,6 +331,33 @@ curl -X GET http://localhost:8080/card/<deck-id>/deck \
   --cookie "auth=<session-token>"
 ~~~
 
+### Example Response
+
+```json
+[
+  {
+    "cardId": "11111111-1111-1111-1111-111111111111",
+    "question": "What is IOC?",
+    "answer": "Inversion of Control",
+    "userId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "deckId": "550e8400-e29b-41d4-a716-446655440000"
+  },
+  {
+    "cardId": "22222222-2222-2222-2222-222222222222",
+    "question": "What is dependency injection?",
+    "answer": "A pattern where dependencies are provided from outside the class.",
+    "userId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "deckId": "550e8400-e29b-41d4-a716-446655440000"
+  },
+  {
+    "cardId": "33333333-3333-3333-3333-333333333333",
+    "question": "What is Spring Boot?",
+    "answer": "A framework that simplifies building Spring applications.",
+    "userId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "deckId": "550e8400-e29b-41d4-a716-446655440000"
+  }
+]
+
 ---
 
 ## 9. Delete Card
