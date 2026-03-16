@@ -55,6 +55,8 @@ These require the `auth` cookie:
 5. Protected endpoints use that cookie to identify the user
 6. User logs out to delete the session
 
+> For browser-based frontend apps, use `credentials: "include"` so cookies are sent with requests.
+
 ---
 
 ## Main Resources
@@ -103,7 +105,7 @@ Creates a new user account.
 ### Purpose
 Use this when a new user signs up for the app.
 
-### Request Body
+### Example Request Body
 
 ~~~json
 {
@@ -112,19 +114,28 @@ Use this when a new user signs up for the app.
 }
 ~~~
 
+### Example Request (JavaScript)
+
+~~~javascript
+const response = await fetch("http://localhost:8080/user/register", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    name: "dina",
+    password: "mypassword123"
+  })
+});
+
+console.log(response.status); // 201
+~~~
+
 ### Success Response
 - `201 Created`
 
-### Example
-
-~~~bash
-curl -X POST http://localhost:8080/user/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "dina",
-    "password": "mypassword123"
-  }'
-~~~
+### Example Response
+No response body.
 
 ---
 
@@ -137,7 +148,7 @@ Authenticates a user and creates a session.
 ### Purpose
 Use this when a user wants to access protected features such as creating decks or cards.
 
-### Request Body
+### Example Request Body
 
 ~~~json
 {
@@ -146,25 +157,46 @@ Use this when a user wants to access protected features such as creating decks o
 }
 ~~~
 
+### Example Request (JavaScript)
+
+~~~javascript
+const response = await fetch("http://localhost:8080/user/login", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  credentials: "include",
+  body: JSON.stringify({
+    name: "dina",
+    password: "mypassword123"
+  })
+});
+
+const text = await response.text();
+console.log(response.status); // 200
+console.log(text); // "Login successful"
+~~~
+
 ### Success Response
 - `200 OK`
+
+### Example Response Headers
+
+~~~http
+Set-Cookie: auth=<session-token>; HttpOnly; Path=/
+~~~
+
+### Example Response Body
+
+~~~text
+Login successful
+~~~
 
 ### What Happens
 - the backend checks the username and password
 - if valid, it creates a session
 - it sends back an `auth` cookie
 - that cookie is used for future protected requests
-
-### Example
-
-~~~bash
-curl -i -X POST http://localhost:8080/user/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "dina",
-    "password": "mypassword123"
-  }'
-~~~
 
 ---
 
@@ -177,15 +209,22 @@ Deletes the current session.
 ### Purpose
 Use this when the user wants to sign out.
 
+### Example Request (JavaScript)
+
+~~~javascript
+const response = await fetch("http://localhost:8080/user/logout", {
+  method: "GET",
+  credentials: "include"
+});
+
+console.log(response.status); // 200
+~~~
+
 ### Success Response
 - `200 OK`
 
-### Example
-
-~~~bash
-curl -X GET http://localhost:8080/user/logout \
-  --cookie "auth=<session-token>"
-~~~
+### Example Response
+No response body.
 
 ---
 
@@ -198,7 +237,7 @@ Creates a new deck for the authenticated user.
 ### Purpose
 Use this when a user wants to organize flashcards under a topic or subject.
 
-### Request Body
+### Example Request Body
 
 ~~~json
 {
@@ -207,21 +246,33 @@ Use this when a user wants to organize flashcards under a topic or subject.
 }
 ~~~
 
+### Example Request (JavaScript)
+
+~~~javascript
+const response = await fetch("http://localhost:8080/deck", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  credentials: "include",
+  body: JSON.stringify({
+    name: "Java Basics",
+    description: "Cards for Java interview prep"
+  })
+});
+
+const deckId = await response.json();
+console.log(response.status); // 200
+console.log(deckId);
+~~~
+
 ### Success Response
 - `200 OK`
 
-Returns the created deck ID.
+### Example Response
 
-### Example
-
-~~~bash
-curl -X POST http://localhost:8080/deck \
-  -H "Content-Type: application/json" \
-  --cookie "auth=<session-token>" \
-  -d '{
-    "name": "Java Basics",
-    "description": "Cards for Java interview prep"
-  }'
+~~~json
+"550e8400-e29b-41d4-a716-446655440000"
 ~~~
 
 ---
@@ -235,14 +286,39 @@ Returns all decks that belong to the authenticated user.
 ### Purpose
 Use this to show a user's deck list on the frontend.
 
+### Example Request (JavaScript)
+
+~~~javascript
+const response = await fetch("http://localhost:8080/deck", {
+  method: "GET",
+  credentials: "include"
+});
+
+const decks = await response.json();
+console.log(response.status); // 200
+console.log(decks);
+~~~
+
 ### Success Response
 - `200 OK`
 
-### Example
+### Example Response
 
-~~~bash
-curl -X GET http://localhost:8080/deck \
-  --cookie "auth=<session-token>"
+~~~json
+[
+  {
+    "deckId": "550e8400-e29b-41d4-a716-446655440000",
+    "name": "Java Basics",
+    "description": "Cards for Java interview prep",
+    "userID": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+  },
+  {
+    "deckId": "123e4567-e89b-12d3-a456-426614174000",
+    "name": "Spring Boot",
+    "description": "Spring notes",
+    "userID": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+  }
+]
 ~~~
 
 ---
@@ -259,15 +335,24 @@ Use this when the user wants to remove an entire deck.
 ### Path Parameter
 - `id` = deck UUID
 
+### Example Request (JavaScript)
+
+~~~javascript
+const deckId = "550e8400-e29b-41d4-a716-446655440000";
+
+const response = await fetch(`http://localhost:8080/deck/delete/${deckId}`, {
+  method: "DELETE",
+  credentials: "include"
+});
+
+console.log(response.status); // 200
+~~~
+
 ### Success Response
 - `200 OK`
 
-### Example
-
-~~~bash
-curl -X DELETE http://localhost:8080/deck/delete/<deck-id> \
-  --cookie "auth=<session-token>"
-~~~
+### Example Response
+No response body.
 
 ---
 
@@ -283,7 +368,7 @@ Use this when the user wants to add a flashcard to a specific deck.
 ### Path Parameter
 - `id` = deck UUID
 
-### Request Body
+### Example Request Body
 
 ~~~json
 {
@@ -292,19 +377,38 @@ Use this when the user wants to add a flashcard to a specific deck.
 }
 ~~~
 
+### Example Request (JavaScript)
+
+~~~javascript
+const deckId = "550e8400-e29b-41d4-a716-446655440000";
+
+const response = await fetch(`http://localhost:8080/card/${deckId}`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  credentials: "include",
+  body: JSON.stringify({
+    question: "What is dependency injection?",
+    answer: "A design pattern where dependencies are provided from outside the class."
+  })
+});
+
+const card = await response.json();
+console.log(response.status); // 200
+console.log(card);
+~~~
+
 ### Success Response
 - `200 OK`
 
-### Example
+### Example Response
 
-~~~bash
-curl -X POST http://localhost:8080/card/<deck-id> \
-  -H "Content-Type: application/json" \
-  --cookie "auth=<session-token>" \
-  -d '{
-    "question": "What is dependency injection?",
-    "answer": "A design pattern where dependencies are provided from outside the class."
-  }'
+~~~json
+{
+  "question": "What is dependency injection?",
+  "answer": "A design pattern where dependencies are provided from outside the class."
+}
 ~~~
 
 ---
@@ -321,19 +425,27 @@ Use this when the frontend opens a deck and needs to display all its flashcards.
 ### Path Parameter
 - `id` = deck UUID
 
+### Example Request (JavaScript)
+
+~~~javascript
+const deckId = "550e8400-e29b-41d4-a716-446655440000";
+
+const response = await fetch(`http://localhost:8080/card/${deckId}/deck`, {
+  method: "GET",
+  credentials: "include"
+});
+
+const cards = await response.json();
+console.log(response.status); // 200
+console.log(cards);
+~~~
+
 ### Success Response
 - `200 OK`
 
-### Example
-
-~~~bash
-curl -X GET http://localhost:8080/card/<deck-id>/deck \
-  --cookie "auth=<session-token>"
-~~~
-
 ### Example Response
 
-```json
+~~~json
 [
   {
     "cardId": "11111111-1111-1111-1111-111111111111",
@@ -357,6 +469,7 @@ curl -X GET http://localhost:8080/card/<deck-id>/deck \
     "deckId": "550e8400-e29b-41d4-a716-446655440000"
   }
 ]
+~~~
 
 ---
 
@@ -372,15 +485,24 @@ Use this when the user wants to remove a single flashcard.
 ### Path Parameter
 - `id` = card UUID
 
+### Example Request (JavaScript)
+
+~~~javascript
+const cardId = "11111111-1111-1111-1111-111111111111";
+
+const response = await fetch(`http://localhost:8080/card/${cardId}`, {
+  method: "DELETE",
+  credentials: "include"
+});
+
+console.log(response.status); // 200
+~~~
+
 ### Success Response
 - `200 OK`
 
-### Example
-
-~~~bash
-curl -X DELETE http://localhost:8080/card/<card-id> \
-  --cookie "auth=<session-token>"
-~~~
+### Example Response
+No response body.
 
 ---
 
@@ -392,9 +514,49 @@ A frontend app would usually use the API in this order:
 Call:
 - `POST /user/register`
 
+Request example:
+
+~~~javascript
+await fetch("http://localhost:8080/user/register", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    name: "dina",
+    password: "mypassword123"
+  })
+});
+~~~
+
+Response example:
+- `201 Created`
+
 ## 2. Log In
 Call:
 - `POST /user/login`
+
+Request example:
+
+~~~javascript
+await fetch("http://localhost:8080/user/login", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  credentials: "include",
+  body: JSON.stringify({
+    name: "dina",
+    password: "mypassword123"
+  })
+});
+~~~
+
+Response example:
+
+~~~text
+Login successful
+~~~
 
 The browser or client stores the returned `auth` cookie.
 
@@ -402,32 +564,141 @@ The browser or client stores the returned `auth` cookie.
 Call:
 - `POST /deck`
 
-Example:
-- Java Basics
-- Biology Quiz 1
-- Networking Terms
+Request example:
+
+~~~javascript
+await fetch("http://localhost:8080/deck", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  credentials: "include",
+  body: JSON.stringify({
+    name: "Spring Boot Interview",
+    description: "Study deck for Spring Boot concepts"
+  })
+});
+~~~
+
+Response example:
+
+~~~json
+"550e8400-e29b-41d4-a716-446655440000"
+~~~
 
 ## 4. Add Cards to the Deck
 Call:
 - `POST /card/{deckId}`
 
-Example cards:
-- question: `What is JVM?`
-- answer: `Java Virtual Machine`
+Request example:
+
+~~~javascript
+await fetch("http://localhost:8080/card/550e8400-e29b-41d4-a716-446655440000", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  credentials: "include",
+  body: JSON.stringify({
+    question: "What is JVM?",
+    answer: "Java Virtual Machine"
+  })
+});
+~~~
+
+Response example:
+
+~~~json
+{
+  "question": "What is JVM?",
+  "answer": "Java Virtual Machine"
+}
+~~~
 
 ## 5. Show Data to the User
 Call:
 - `GET /deck` to show all decks
 - `GET /card/{deckId}/deck` to show cards in a selected deck
 
+Deck request example:
+
+~~~javascript
+await fetch("http://localhost:8080/deck", {
+  method: "GET",
+  credentials: "include"
+});
+~~~
+
+Deck response example:
+
+~~~json
+[
+  {
+    "deckId": "550e8400-e29b-41d4-a716-446655440000",
+    "name": "Spring Boot Interview",
+    "description": "Study deck for Spring Boot concepts",
+    "userID": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+  }
+]
+~~~
+
+Card request example:
+
+~~~javascript
+await fetch("http://localhost:8080/card/550e8400-e29b-41d4-a716-446655440000/deck", {
+  method: "GET",
+  credentials: "include"
+});
+~~~
+
+Card response example:
+
+~~~json
+[
+  {
+    "cardId": "11111111-1111-1111-1111-111111111111",
+    "question": "What is JVM?",
+    "answer": "Java Virtual Machine",
+    "userId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "deckId": "550e8400-e29b-41d4-a716-446655440000"
+  }
+]
+~~~
+
 ## 6. Delete Data When Needed
 Call:
 - `DELETE /deck/delete/{id}`
 - `DELETE /card/{id}`
 
+Request example:
+
+~~~javascript
+await fetch("http://localhost:8080/card/11111111-1111-1111-1111-111111111111", {
+  method: "DELETE",
+  credentials: "include"
+});
+~~~
+
+Response example:
+- `200 OK`
+- no response body
+
 ## 7. Log Out
 Call:
 - `GET /user/logout`
+
+Request example:
+
+~~~javascript
+await fetch("http://localhost:8080/user/logout", {
+  method: "GET",
+  credentials: "include"
+});
+~~~
+
+Response example:
+- `200 OK`
+- no response body
 
 ---
 
@@ -458,16 +729,54 @@ A student using a study app might do the following:
 
 ---
 
+# Example Error Responses
+
+These are common examples for frontend documentation.
+
+## 400 Bad Request
+
+~~~json
+{
+  "error": "Invalid request body"
+}
+~~~
+
+## 401 Unauthorized
+
+~~~json
+{
+  "error": "Unauthorized"
+}
+~~~
+
+## 404 Not Found
+
+~~~json
+{
+  "error": "Resource not found"
+}
+~~~
+
+## 500 Internal Server Error
+
+~~~json
+{
+  "error": "Something went wrong"
+}
+~~~
+
+---
+
 # Endpoint Summary
 
-| Method | Endpoint | Purpose | Auth Required |
-|--------|----------|---------|---------------|
-| POST | `/user/register` | Create a new user account | No |
-| POST | `/user/login` | Log in and create a session | No |
-| GET | `/user/logout` | Log out and delete session | Yes |
-| POST | `/deck` | Create a new deck | Yes |
-| GET | `/deck` | Get all decks for the logged-in user | Yes |
-| DELETE | `/deck/delete/{id}` | Delete a deck | Yes |
-| POST | `/card/{id}` | Create a card in a deck | Yes |
-| GET | `/card/{id}/deck` | Get all cards in a deck | Yes |
-| DELETE | `/card/{id}` | Delete a card | Yes |
+| Method | Endpoint | Example Request | Example Response | Auth Required |
+|--------|----------|-----------------|------------------|---------------|
+| POST | `/user/register` | `fetch("/user/register", { method: "POST", body: JSON.stringify({ name, password }) })` | No body | No |
+| POST | `/user/login` | `fetch("/user/login", { method: "POST", credentials: "include", body: JSON.stringify({ name, password }) })` | `"Login successful"` | No |
+| GET | `/user/logout` | `fetch("/user/logout", { method: "GET", credentials: "include" })` | No body | Yes |
+| POST | `/deck` | `fetch("/deck", { method: "POST", credentials: "include", body: JSON.stringify({ name, description }) })` | `"550e8400-e29b-41d4-a716-446655440000"` | Yes |
+| GET | `/deck` | `fetch("/deck", { method: "GET", credentials: "include" })` | Array of deck objects | Yes |
+| DELETE | `/deck/delete/{id}` | `fetch("/deck/delete/{id}", { method: "DELETE", credentials: "include" })` | No body | Yes |
+| POST | `/card/{id}` | `fetch("/card/{id}", { method: "POST", credentials: "include", body: JSON.stringify({ question, answer }) })` | Card summary object | Yes |
+| GET | `/card/{id}/deck` | `fetch("/card/{id}/deck", { method: "GET", credentials: "include" })` | Array of card objects | Yes |
+| DELETE | `/card/{id}` | `fetch("/card/{id}", { method: "DELETE", credentials: "include" })` | No body | Yes |
