@@ -45,7 +45,7 @@ These require the `auth` cookie:
 - `DELETE /deck/delete/{id}`
 - `POST /card/{id}`
 - `GET /card/{id}/deck`
-- `DELETE /card/{id}`
+- `DELETE /card/delete/{id}`
 
 ### Auth Flow
 1. User registers an account
@@ -475,7 +475,7 @@ console.log(cards);
 
 ## 9. Delete Card
 
-**DELETE** `/card/{id}`
+**DELETE** `/card/delete/{id}`
 
 Deletes a card by its ID.
 
@@ -668,7 +668,7 @@ Card response example:
 ## 6. Delete Data When Needed
 Call:
 - `DELETE /deck/delete/{id}`
-- `DELETE /card/{id}`
+- `DELETE /card/delete/{id}`
 
 Request example:
 
@@ -779,4 +779,4 @@ These are common examples for frontend documentation.
 | DELETE | `/deck/delete/{id}` | `fetch("/deck/delete/{id}", { method: "DELETE", credentials: "include" })` | No body | Yes |
 | POST | `/card/{id}` | `fetch("/card/{id}", { method: "POST", credentials: "include", body: JSON.stringify({ question, answer }) })` | Card summary object | Yes |
 | GET | `/card/{id}/deck` | `fetch("/card/{id}/deck", { method: "GET", credentials: "include" })` | Array of card objects | Yes |
-| DELETE | `/card/{id}` | `fetch("/card/{id}", { method: "DELETE", credentials: "include" })` | No body | Yes |
+| DELETE | `/card/delete/{id}` | `fetch("/card/{id}", { method: "DELETE", credentials: "include" })` | No body | Yes |
