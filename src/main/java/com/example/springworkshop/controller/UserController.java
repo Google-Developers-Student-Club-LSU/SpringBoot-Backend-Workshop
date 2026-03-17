@@ -8,13 +8,9 @@ import com.example.springworkshop.service.UserSessionService;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
 @RequestMapping("/user")
@@ -30,6 +26,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<Void> createUserEntity(@RequestBody CreateUserReq createUserReq) {
+        // Boilerplate is ready. Students can focus on request bodies and service wiring.
         userService.createUser(createUserReq.name(), createUserReq.password());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -46,10 +43,12 @@ public class UserController {
                 .path("/")
                 .build();
 
+        // TODO: discuss SameSite, secure cookies, and HTTPS in production.
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body("Login successful");
     }
+
     @GetMapping("/logout")
     public ResponseEntity<?> logout(@CookieValue(value="auth") String userSession) {
         userSessionService.deleteSession(userSession);

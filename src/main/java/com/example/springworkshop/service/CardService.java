@@ -5,37 +5,26 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.example.springworkshop.exception.ResourceNotFoundException;
 import com.example.springworkshop.model.Card;
 import com.example.springworkshop.repository.CardRepository;
 
 @Service
 public class CardService {
-    private final CardRepository cardRepository;
-
-    public CardService(CardRepository cardRepository){
-        this.cardRepository = cardRepository;
+    public CardService(CardRepository cardRepository) {
+        // TODO: constructor injection
     }
 
-    public Card createCard (String question, String answer, UUID userId, UUID deckId){
-        Card card = new Card(question, answer, userId, deckId);
-        return cardRepository.save(card);
+    public Card createCard(String question, String answer, UUID userId, UUID deckId) {
+        // TODO: create and save a card
+        return null;
     }
 
-
-    public List<Card> findAllCardDeck (UUID deckId){
-    List<Card> cards = cardRepository.findAllByDeckId(deckId);
-    if(cards.isEmpty()){
-        throw new ResourceNotFoundException("Card not found");
+    public List<Card> findAllCardDeck(UUID deckId) {
+        // TODO: find all cards for a deck
+        return null;
     }
 
-    return cards;
-    }
-      
-
-
-
-    public void deleteCard (UUID cardId){
-        cardRepository.deleteById(cardId);
+    public void deleteCard(UUID cardId) {
+        // TODO: delete a card
     }
 }

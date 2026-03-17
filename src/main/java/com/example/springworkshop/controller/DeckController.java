@@ -3,7 +3,6 @@ package com.example.springworkshop.controller;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,8 +18,6 @@ import com.example.springworkshop.service.DeckService;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
 @RequestMapping("/deck")
@@ -34,6 +31,7 @@ public class DeckController {
 
     @PostMapping
     public ResponseEntity<?> createDeck(@RequestBody CreateDeckReq createDeckReq, @AuthenticationPrincipal User user){
+        // @AuthenticationPrincipal gives us the user from Spring Security.
         Deck deck = deckService.createDeck(createDeckReq.name(), createDeckReq.description(), user.getUserId());
         return new ResponseEntity<>(deck.getDeckId(), HttpStatus.OK);
     }

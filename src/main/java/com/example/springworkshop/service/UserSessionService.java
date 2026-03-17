@@ -4,39 +4,27 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.example.springworkshop.exception.ResourceNotFoundException;
-import com.example.springworkshop.helper.GenerateSession;
 import com.example.springworkshop.model.User;
 import com.example.springworkshop.model.UserSession;
 import com.example.springworkshop.repository.UserSessionRepository;
 
 @Service
 public class UserSessionService {
-    private final UserSessionRepository userSessionRepository;
-    private final UserService userService;
-
-    public UserSessionService (UserSessionRepository userSessionRepository, UserService userService){
-        this.userSessionRepository = userSessionRepository;
-        this.userService = userService;
+    public UserSessionService(UserSessionRepository userSessionRepository, UserService userService) {
+        // TODO: constructor injection
     }
 
-
-    public UserSession createSession (UUID userId){
-        String session = GenerateSession.generateId();
-        UserSession userSession = new UserSession(
-            session,
-            userId
-        );
-
-        return userSessionRepository.save(userSession);
+    public UserSession createSession(UUID userId) {
+        // TODO: create and save a session
+        return null;
     }
 
-    public void deleteSession (String session){
-        userSessionRepository.deleteById(session);
+    public void deleteSession(String session) {
+        // TODO: delete a session
     }
 
-    public User findBySession (String session){
-    UserSession userSession = userSessionRepository.findById(session).orElseThrow(()-> new ResourceNotFoundException("Session Not Found"));
-    return userService.findUserById(userSession.getUserId());
+    public User findBySession(String session) {
+        // TODO: load a user from a session id
+        return null;
     }
 }
