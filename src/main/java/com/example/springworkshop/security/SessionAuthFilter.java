@@ -25,6 +25,13 @@ public class SessionAuthFilter extends OncePerRequestFilter {
     public SessionAuthFilter(UserSessionService userSessionService){
         this.userSessionService = userSessionService;
     }
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+
+        return path.equals("/user/login")
+            || path.equals("/user/register");
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException{

@@ -24,8 +24,14 @@ public class CardService {
 
 
     public List<Card> findAllCardDeck (UUID deckId){
-        return cardRepository.findAllByDeckId(deckId).orElseThrow(()-> new ResourceNotFoundException("Card not found"));
+    List<Card> cards = cardRepository.findAllByDeckId(deckId);
+    if(cards.isEmpty()){
+        throw new ResourceNotFoundException("Card not found");
     }
+
+    return cards;
+    }
+      
 
 
 

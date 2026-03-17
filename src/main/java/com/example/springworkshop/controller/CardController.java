@@ -37,7 +37,7 @@ public class CardController {
 
     @PostMapping("/{id}")
     public ResponseEntity<?> createCard(@PathVariable UUID id, @RequestBody CreateCardReq createCardReq, @AuthenticationPrincipal User user ) {
-        Card card = new Card(createCardReq.question(), createCardReq.answer(), user.getUserId(), id);
+        Card card = cardService.createCard(createCardReq.question(), createCardReq.answer(), user.getUserId(),id);
         CreateCardRes createCardRes = new CreateCardRes(
             card.getQuestion(),
             card.getAnswer()

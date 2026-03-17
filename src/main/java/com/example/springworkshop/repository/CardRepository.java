@@ -9,5 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.springworkshop.model.Card;
 
 public interface CardRepository extends JpaRepository<Card, UUID> {
-    Optional<List<Card>> findAllByDeckId(UUID deckId);
+    List<Card> findAllByDeckId(UUID deckId);
 }
