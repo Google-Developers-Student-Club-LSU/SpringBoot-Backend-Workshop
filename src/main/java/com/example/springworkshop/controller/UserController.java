@@ -6,14 +6,14 @@ import com.example.springworkshop.model.UserSession;
 import com.example.springworkshop.service.UserService;
 import com.example.springworkshop.service.UserSessionService;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -51,8 +51,10 @@ public class UserController {
                 .body("Login successful");
     }
     @GetMapping("/logout")
-    public ResponseEntity<?> logout(@CookieValue(value="auth") String userSession) {
+    public ResponseEntity<?> logout(@CookieValue(value="auth") String userSession,
+                                    HttpServletResponse response) {
         userSessionService.deleteSession(userSession);
-        return new ResponseEntity<>(HttpStatus.OK);
+        response.setHeader("Clear-Site-Data", "\"cookies\", \"cache\", \"storage\"");
+        return ResponseEntity.noContent().build();
     }
 }
