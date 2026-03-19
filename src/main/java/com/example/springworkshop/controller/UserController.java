@@ -26,32 +26,17 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<Void> createUserEntity(@RequestBody CreateUserReq createUserReq) {
-        // Boilerplate is ready. Students can focus on request bodies and service wiring.
         userService.createUser(createUserReq.name(), createUserReq.password());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     public ResponseEntity<String> loginUserEntity(@RequestBody CreateUserReq createUserReq) {
-        User user = userService.loginUser(createUserReq.name(), createUserReq.password());
-
-        UserSession userSession = userSessionService.createSession(user.getUserId());
-
-        ResponseCookie cookie = ResponseCookie.from("auth", userSession.getUserSession())
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .build();
-
-        // TODO: discuss SameSite, secure cookies, and HTTPS in production.
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body("Login successful");
+        //TODO: CREATE COOKIE AND SET COOKIE AFTER LOGIN 
     }
 
     @GetMapping("/logout")
     public ResponseEntity<?> logout(@CookieValue(value="auth") String userSession) {
-        userSessionService.deleteSession(userSession);
-        return new ResponseEntity<>(HttpStatus.OK);
+        //TODO: DELETE COOKIE AND WHEN LOGOUT
     }
 }
